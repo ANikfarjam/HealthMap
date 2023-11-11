@@ -4,6 +4,49 @@ import ttkbootstrap as ttkb
 from usMap import create_map
 import matplotlib.pyplot as plt
 import json
+import pandas as pd
+from operator import mul
+from DataFrames import covid_df, influenza_df, Pneumonia_df
+from analysisFuntions import anl_deathRate
+#functions
+def color_map(df, polygon_dic):
+    #to color code the population, we first define minimum and maximum amount of death
+    #create a bucket with 10 color ctagories 
+    #   We have to calculate min and max of each data and create 10 colore with restpect to thau
+    #   |500<X<550|--->Arizona, California... --->grean
+    #   |551<x<600|--->New York, nevada... ---> blue
+    #   ...
+
+    min_death = df[df.columns[4]].min() 
+    max_death = df[df.columns[4]].max()
+    step_int = (max_death - min_death)/10
+   
+    for jurisdiction, polygons in polygon_dic.items():   # Unpack the canvas ID and polygon object
+        for canvas_id in polygons:
+            # Extract the value from the list in polygon list
+            # Find the total death value for the current jurisdiction
+            jurisdiction_total_death = df.loc[df['Jurisdiction'] == jurisdiction, df.columns[4]].values[0]
+            if jurisdiction_total_death >= min_death and jurisdiction_total_death < min_death + step_int:
+                canvas.itemconfig(canvas_id, fill="lime")
+            elif jurisdiction_total_death >= (min_death + step_int) and jurisdiction_total_death < (min_death + (2 * step_int)):
+                canvas.itemconfig(canvas_id, fill="green")
+            elif jurisdiction_total_death >= (min_death + (2 * step_int)) and jurisdiction_total_death < (min_death + (3 * step_int)):
+                canvas.itemconfig(canvas_id, fill="yellow")
+            elif jurisdiction_total_death >= (min_death + (3 * step_int)) and jurisdiction_total_death < (min_death + (4 * step_int)):
+                canvas.itemconfig(canvas_id, fill="gold")
+            elif jurisdiction_total_death >= (min_death + (4 * step_int)) and jurisdiction_total_death < (min_death + (5 * step_int)):
+                canvas.itemconfig(canvas_id, fill="orange")
+            elif jurisdiction_total_death >= (min_death + (5 * step_int)) and jurisdiction_total_death < (min_death + (6 * step_int)):
+                canvas.itemconfig(canvas_id, fill="darkorange")
+            elif jurisdiction_total_death >= (min_death + (6 * step_int)) and jurisdiction_total_death < (min_death + (7 * step_int)):
+                canvas.itemconfig(canvas_id, fill="sandybrown")
+            elif jurisdiction_total_death >= (min_death + (7 * step_int)) and jurisdiction_total_death < (min_death + (8 * step_int)):
+                canvas.itemconfig(canvas_id, fill="coral")
+            elif jurisdiction_total_death >= (min_death + (8 * step_int)) and jurisdiction_total_death < (min_death + (9 * step_int)):
+                canvas.itemconfig(canvas_id, fill="red")
+            else:
+                canvas.itemconfig(canvas_id, fill="darkred")
+
 
 #creatint the main windows and frame
 #def change_polygon_color():
@@ -79,36 +122,37 @@ for feature in data['features']:
             scaled_polygon = [transform(coord, scale_factor, offset_x, offset_y, canvas_width, canvas_height) for coord in polygon]
             # Draw the polygon on the canvas
             st_shape = canvas.create_polygon(*scaled_polygon, outline='black', fill='gainsboro')
-            st_shape
+            canvas.itemconfig(st_shape, fill='gainsboro')
             #{"type":"Feature","id":"AL","properties":{"name":"Alabama"},"geometry":{"type":"Polygon",
             polygon_dic[str(feature.get('properties').get('name'))] = [st_shape]
             
             
     elif geometry['type'] == 'MultiPolygon':
+        shapes = []
         for multipolygon in geometry['coordinates']:
-            shapes = []
             for polygon in multipolygon:
                 # Transform coordinates
                 scaled_polygon = [transform(coord, scale_factor, offset_x, offset_y, canvas_width, canvas_height) for coord in polygon]
                 # Draw the polygon on the canvas
                 st_shape = canvas.create_polygon(*scaled_polygon, outline='black', fill='gainsboro')
-                st_shape 
+                canvas.itemconfig(st_shape, fill='gainsboro')
                 shapes.append(st_shape)    
-            polygon_dic[str(feature.get('properties').get('name'))] = [shapes] 
+        polygon_dic[str(feature.get('properties').get('name'))] = shapes
 #filtering pannel
 selected_option = tk.StringVar()
 label1 = ttkb.Label(left_frame, text="Wekcome to HealthMap!").grid(column=0,row=0, sticky="NSEW")
 label2 = ttkb.Label(left_frame, text="Select Data to show:").grid(column=0,row=1, sticky="NSEW")
-covid_filter = ttkb.Radiobutton(left_frame, text='Covid-19', variable=selected_option, value='Covid-19')
+covid_filter = ttkb.Radiobutton(left_frame, text='Covid-19', variable=selected_option, value='Covid-19', command=lambda: color_map(anl_deathRate(covid_df), polygon_dic))
 covid_filter.grid(column=0,row=2, sticky="NSEW")
 #covid_filter.pack()
-influenza_filter = ttkb.Radiobutton(left_frame, text='Influenza', variable=selected_option, value='Influenza')
+
+influenza_filter = ttkb.Radiobutton(left_frame, text='Influenza', variable=selected_option, value='Influenza', command=lambda: color_map(anl_deathRate(influenza_df), polygon_dic))
 influenza_filter.grid(column=0,row=3, sticky="NSEW")
 #influenza_filter.pack()
-pneumonia_filter = ttkb.Radiobutton(left_frame, text='Pneumonia', variable=selected_option, value='Pneumonia')
+pneumonia_filter = ttkb.Radiobutton(left_frame, text='Pneumonia', variable=selected_option, value='Pneumonia', command=lambda: color_map(anl_deathRate(Pneumonia_df), polygon_dic))
 pneumonia_filter.grid(column=0,row=4, sticky="NSEW")
 #pneumonia_filter.pack()
 
-
+#print(polygon_dic)
 root.mainloop()
 
