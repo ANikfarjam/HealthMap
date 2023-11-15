@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 import ttkbootstrap as ttkb
-from usMap import create_map
 import matplotlib.pyplot as plt
 import json
 import pandas as pd
@@ -17,15 +16,15 @@ def color_map(df, polygon_dic):
     #   |551<x<600|--->New York, nevada... ---> blue
     #   ...
 
-    min_death = df[df.columns[4]].min() 
-    max_death = df[df.columns[4]].max()
+    min_death = df[df.columns[3]].min() 
+    max_death = df[df.columns[3]].max()
     step_int = (max_death - min_death)/10
    
     for jurisdiction, polygons in polygon_dic.items():   # Unpack the canvas ID and polygon object
         for canvas_id in polygons:
             # Extract the value from the list in polygon list
             # Find the total death value for the current jurisdiction
-            jurisdiction_total_death = df.loc[df['Jurisdiction'] == jurisdiction, df.columns[4]].values[0]
+            jurisdiction_total_death = df.loc[df['Jurisdiction'] == jurisdiction, df.columns[3]].values[0]
             if jurisdiction_total_death >= min_death and jurisdiction_total_death < min_death + step_int:
                 canvas.itemconfig(canvas_id, fill="lime")
             elif jurisdiction_total_death >= (min_death + step_int) and jurisdiction_total_death < (min_death + (2 * step_int)):
@@ -153,6 +152,6 @@ pneumonia_filter = ttkb.Radiobutton(left_frame, text='Pneumonia', variable=selec
 pneumonia_filter.grid(column=0,row=4, sticky="NSEW")
 #pneumonia_filter.pack()
 
-#print(polygon_dic)
+print(polygon_dic)
 root.mainloop()
 

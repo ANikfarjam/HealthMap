@@ -1,7 +1,8 @@
 from DataFrames import covid_df, influenza_df, Pneumonia_df
 import pandas as pd
-st_df = pd.read_csv("States.csv")
-st_df= st_df.drop(columns='population')
+st_df = pd.read_csv("State Population.csv")
+st_df = st_df[['NAME', 'POPESTIMATE2022']]
+#st_df= st_df.drop(columns='population')
 def anl_by_age(df):
     """
     input: a dataframe 
@@ -12,7 +13,9 @@ def anl_by_age(df):
     # i need to create a data frame that contains Name of State, Age Group, Death Rate
     all_age_df = df[df['Age Group']=="All Ages"]
     all_age_df = all_age_df.groupby('Jurisdiction').agg({df.columns[3]:'sum'}).reset_index()
-    result_df = pd.merge(st_df, all_age_df, on= 'Jurisdiction')
+    result_df = pd.merge(st_df, all_age_df, left_on='NAME', right_on='Jurisdiction')
+    result_df = result_df.drop(columns='NAME')
+    #result_df = pd.merge(st_df, all_age_df, on= 'Jurisdiction')
     result_df = result_df.rename(columns={df.columns[3]:'all ages'})
     #group age 0-17
     Age_group_1 = df[df['Age Group']=="0-17 years"]
@@ -36,7 +39,9 @@ def anl_by_age(df):
     return result_df#[51 rows x 8 columns]
 def anl_deathRate(df):
     mod_df = df.groupby('Jurisdiction').agg({df.columns[3]:'sum'}).reset_index()
-    result_df = pd.merge(st_df, mod_df, on='Jurisdiction')
+    result_df = pd.merge(mod_df, st_df, left_on='Jurisdiction', right_on='NAME')
+    result_df = result_df.drop(columns='NAME')
+    result_df['Death Per Capita'] = result_df.iloc[:,1]/result_df.iloc[:,2]
     return result_df
 def anl_weekly(df):
     """
