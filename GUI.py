@@ -9,21 +9,15 @@ from DataFrames import covid_df, influenza_df, Pneumonia_df
 from analysisFuntions import anl_deathRate
 #functions
 def color_map(df, polygon_dic):
-    #to color code the population, we first define minimum and maximum amount of death
-    #create a bucket with 10 color ctagories 
-    #   We have to calculate min and max of each data and create 10 colore with restpect to thau
-    #   |500<X<550|--->Arizona, California... --->grean
-    #   |551<x<600|--->New York, nevada... ---> blue
-    #   ...
-
+    #to color code the population, we first define minimum and maximum amount of death per capita
+    #since we have 10 color catagories we devide the difference between max and min to 10 
     min_death = df[df.columns[3]].min() 
     max_death = df[df.columns[3]].max()
     step_int = (max_death - min_death)/10
-   
-    for jurisdiction, polygons in polygon_dic.items():   # Unpack the canvas ID and polygon object
+    # Now we itterate through our polygon dictionary and extract the polygon ID from the dictionary
+    for jurisdiction, polygons in polygon_dic.items():   
         for canvas_id in polygons:
-            # Extract the value from the list in polygon list
-            # Find the total death value for the current jurisdiction
+            # Find the total death value from the data frame and then color the polygon related to that state besed on the death rate
             jurisdiction_total_death = df.loc[df['Jurisdiction'] == jurisdiction, df.columns[3]].values[0]
             if jurisdiction_total_death >= min_death and jurisdiction_total_death < min_death + step_int:
                 canvas.itemconfig(canvas_id, fill="lime")
