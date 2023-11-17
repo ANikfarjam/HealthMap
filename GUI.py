@@ -31,7 +31,7 @@ def on_polygon_click(event):
     df = df[df['Jurisdiction']==stateName]
     df = df.sort_values(['Year','Month'])
     #print(df)
-    banner.create_banner(df, Data_frame)
+    banner.create_banner(df, Data_frame, stateName)
     
 def color_map(df, polygon_dic):
     #to color code the population, we first define minimum and maximum amount of death per capita
