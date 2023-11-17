@@ -9,7 +9,7 @@ def create_banner(df, frame, stateName):
     df.reset_index(drop=True, inplace=True)
     # Create a Matplotlib figure and axis
     fig, ax = plt.subplots()
-    lPlot = sns.lineplot(df, x='Month', y=df.columns[2], ax=ax)
+    lPlot = sns.lineplot(df, x='Month', y=df.columns[1], ax=ax)
     # Rotate x-axis labels vertically
     lPlot.set_xticklabels(lPlot.get_xticklabels(), rotation=90, fontsize=7)
     plt.title(stateName)
