@@ -6,8 +6,30 @@ import json
 import pandas as pd
 from operator import mul
 from DataFrames import covid_df, influenza_df, Pneumonia_df
-from analysisFuntions import anl_deathRate
+from analysisFuntions import anl_deathRate, anl_by_age, anl_monthly
+import banner
 #functions
+def get_key_by_value(dictionary, target_value):
+    for key, value in dictionary.items():
+        if value == [target_value] or value == [[target_value]]:
+            return key
+    return None
+def on_polygon_click(event):
+    # clicked_item is a variable that stores the item ID of polygon
+    clicked_item = event.widget.find_closest(event.x, event.y)[0]
+    stateName = get_key_by_value(polygon_dic, clicked_item)
+    #showing data on the bottom of map
+    if selected_option.get() == 'Covid-19':
+        df = anl_monthly(covid_df)
+    elif selected_option.get() == 'Influenza':    
+        df = anl_monthly(influenza_df)
+    elif selected_option.get() == 'Pneumonia':    
+        df = anl_monthly(Pneumonia_df)
+    df = df[df['Jurisdiction']==stateName]
+    df = df.sort_values(['Year','Month'])
+    print(df)
+    banner.create_banner(df)
+    
 def color_map(df, polygon_dic):
     #to color code the population, we first define minimum and maximum amount of death per capita
     #since we have 10 color catagories we devide the difference between max and min to 10 
@@ -52,6 +74,8 @@ left_frame = ttkb.Frame(root)
 left_frame.grid(column=0,row=0, sticky=("N", "W", "E", "S"))
 right_frame = ttkb.Frame(root)
 right_frame.grid(column=1,row=0, sticky=("N", "W", "E", "S"))
+Data_frame = ttkb.Frame(root)
+Data_frame.grid(column=1,row=1, sticky=("N", "W", "E", "S"))
 #since i am creating map from my custom built polygons then i need a dictionatry to keep track of them
 #{"type":"Feature","id":"AL","properties":{"name":"Alabama"},"geometry":{"type":"Polygon",
 #the key values are states name
@@ -118,7 +142,7 @@ for feature in data['features']:
             canvas.itemconfig(st_shape, fill='gainsboro')
             #{"type":"Feature","id":"AL","properties":{"name":"Alabama"},"geometry":{"type":"Polygon",
             polygon_dic[str(feature.get('properties').get('name'))] = [st_shape]
-            
+            canvas.tag_bind(st_shape, '<Button-1>', on_polygon_click)
             
     elif geometry['type'] == 'MultiPolygon':
         shapes = []
@@ -130,7 +154,9 @@ for feature in data['features']:
                 st_shape = canvas.create_polygon(*scaled_polygon, outline='black', fill='gainsboro')
                 canvas.itemconfig(st_shape, fill='gainsboro')
                 shapes.append(st_shape)    
+                # Bind the click event to the polygon
         polygon_dic[str(feature.get('properties').get('name'))] = shapes
+        canvas.tag_bind(st_shape, '<Button-1>', on_polygon_click)
 #filtering pannel
 selected_option = tk.StringVar()
 label1 = ttkb.Label(left_frame, text="Wekcome to HealthMap!").grid(column=0,row=0, sticky="NSEW")
@@ -146,6 +172,5 @@ pneumonia_filter = ttkb.Radiobutton(left_frame, text='Pneumonia', variable=selec
 pneumonia_filter.grid(column=0,row=4, sticky="NSEW")
 #pneumonia_filter.pack()
 
-print(polygon_dic)
 root.mainloop()
 
