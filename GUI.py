@@ -15,6 +15,9 @@ def get_key_by_value(dictionary, target_value):
             return key
     return None
 def on_polygon_click(event):
+     # Clear the existing content in Data_frame
+    for widget in Data_frame.winfo_children():
+        widget.destroy()
     # clicked_item is a variable that stores the item ID of polygon
     clicked_item = event.widget.find_closest(event.x, event.y)[0]
     stateName = get_key_by_value(polygon_dic, clicked_item)
@@ -27,8 +30,8 @@ def on_polygon_click(event):
         df = anl_monthly(Pneumonia_df)
     df = df[df['Jurisdiction']==stateName]
     df = df.sort_values(['Year','Month'])
-    print(df)
-    banner.create_banner(df)
+    #print(df)
+    banner.create_banner(df, Data_frame)
     
 def color_map(df, polygon_dic):
     #to color code the population, we first define minimum and maximum amount of death per capita

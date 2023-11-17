@@ -1,5 +1,6 @@
 from DataFrames import covid_df, influenza_df, Pneumonia_df
 import pandas as pd
+import re
 st_df = pd.read_csv("State Population.csv")
 st_df = st_df[['NAME', 'POPESTIMATE2022']]
 #st_df= st_df.drop(columns='population')
@@ -47,14 +48,25 @@ def anl_weekly(df):
     """
     input: a dataframe 
     output: manipulated datdrame or siries based on weeklydeath rate
+    I dont think analyzing weekly doesnt make sence
     """
     return None
-def anl_monthly():
+def anl_monthly(df):
     """
     input: a dataframe 
     output: manipulated datdrame or siries based on monthly death rate
     """
-    return None
+    #data gets updated every 2 weeks
+    #data frames have these columns
+    #'Week Ending Date','Jurisdiction', 'Age Group', 'Pneumonia Deaths', 'Total Deaths'
+    #droping the day from date format
+    
+    df.loc[:,'Week Ending Date'] = df['Week Ending Date'].apply(lambda x: '/'.join(x.split('/')[::2]))
+    #df['Week Ending Date'] = df['Week Ending Date'].apply(lambda x: '/'.join(x.split('/')[::2]))
+    mod_df = df.groupby(['Week Ending Date', 'Jurisdiction']).agg({df.columns[3]:'sum', df.columns[4]:'sum'}).reset_index()
+    mod_df[['Month', 'Year']] = mod_df['Week Ending Date'].str.split('/', expand=True)
+    return mod_df
+    
 def anl_yearly():
     """
     input: a dataframe 
