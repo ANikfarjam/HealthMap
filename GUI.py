@@ -6,7 +6,7 @@ import json
 import pandas as pd
 from operator import mul
 from DataFrames import covid_df, influenza_df, Pneumonia_df
-from analysisFuntions import anl_deathRate, anl_by_age, anl_monthly
+from analysisFuntions import anl_deathRate, anl_by_age, anl_monthly, anl_yearly, year_filter
 import banner
 #functions
 def get_key_by_value(dictionary, target_value):
@@ -38,6 +38,7 @@ def on_polygon_click(event):
 def color_map(df, polygon_dic):
     #to color code the population, we first define minimum and maximum amount of death per capita
     #since we have 10 color catagories we devide the difference between max and min to 10 
+    #print(df)
     min_death = df[df.columns[3]].min() 
     max_death = df[df.columns[3]].max()
     step_int = (max_death - min_death)/10
@@ -79,8 +80,14 @@ left_frame = ttkb.Frame(root)
 left_frame.grid(column=0,row=0, sticky=("N", "W", "E", "S"))
 right_frame = ttkb.Frame(root)
 right_frame.grid(column=1,row=0, sticky=("N", "W", "E", "S"))
+separator2 = ttkb.Separator(root, orient='horizontal',style='info.Horizontal.TSeparator')
+separator2.grid(column=1,row=1, sticky=("N", "W", "E", "S"))
+#separator.pack()
 Data_frame = ttkb.Frame(root)
-Data_frame.grid(column=1,row=1, sticky=("N", "W", "E", "S"))
+Data_frame.grid(column=1,row=2, sticky=("N", "W", "E", "S"))
+#this frame can sort data to a specific year
+Date_frame = ttkb.Frame(root)
+Date_frame.grid(column=0,row=1, sticky=("N", "W", "E", "S"))
 #since i am creating map from my custom built polygons then i need a dictionatry to keep track of them
 #{"type":"Feature","id":"AL","properties":{"name":"Alabama"},"geometry":{"type":"Polygon",
 #the key values are states name
@@ -164,18 +171,41 @@ for feature in data['features']:
         polygon_dic[str(feature.get('properties').get('name'))] = shapes
 #filtering pannel
 selected_option = tk.StringVar()
-label1 = ttkb.Label(left_frame, text="Wekcome to HealthMap!",style="Inverse.TLabel").grid(column=0,row=0, sticky="NSEW")
-label2 = ttkb.Label(left_frame, text="Select Data to show:").grid(column=0,row=1, sticky="NSEW")
-covid_filter = ttkb.Radiobutton(left_frame, text='Covid-19', variable=selected_option, value='Covid-19', command=lambda: color_map(anl_deathRate(covid_df), polygon_dic))
+label1 = ttkb.Label(left_frame, text="Wekcome to HealthMap!",style="Inverse.TLable").grid(column=0,row=0, sticky="NSEW")
+label2 = ttkb.Label(left_frame, text="Select Data to show:",style='info.Inverse.TLable').grid(column=0,row=1, sticky="NSEW")
+covid_filter = ttkb.Radiobutton(left_frame, text='Covid-19', variable=selected_option, value='Covid-19', style='flatly', command=lambda: color_map(anl_deathRate(covid_df), polygon_dic))
 covid_filter.grid(column=0,row=2, sticky="NSEW")
 #covid_filter.pack()
 
-influenza_filter = ttkb.Radiobutton(left_frame, text='Influenza', variable=selected_option, value='Influenza', command=lambda: color_map(anl_deathRate(influenza_df), polygon_dic))
+influenza_filter = ttkb.Radiobutton(left_frame, text='Influenza', variable=selected_option, value='Influenza', style='flatly', command=lambda: color_map(anl_deathRate(influenza_df), polygon_dic))
 influenza_filter.grid(column=0,row=3, sticky="NSEW")
 #influenza_filter.pack()
-pneumonia_filter = ttkb.Radiobutton(left_frame, text='Pneumonia', variable=selected_option, value='Pneumonia', command=lambda: color_map(anl_deathRate(Pneumonia_df), polygon_dic))
+pneumonia_filter = ttkb.Radiobutton(left_frame, text='Pneumonia', variable=selected_option, value='Pneumonia', style='flatly', command=lambda: color_map(anl_deathRate(Pneumonia_df), polygon_dic))
 pneumonia_filter.grid(column=0,row=4, sticky="NSEW")
-#pneumonia_filter.pack()
 
+
+#Date Filteration
+label3 = ttkb.Label(Date_frame, text="Representation by Date:",style='Inverse.TLable').grid(column=0,row=0, sticky="NSEW")
+label4 = ttkb.Label(Date_frame, text="Select Date to show:",style='info.Inverse.TLable').grid(column=0,row=1, sticky="NSEW")
+# Define df_to_pass with a default value or as an empty DataFrame
+def check_func(year):
+    #print(selected_option.get())
+    df_to_pass = pd.DataFrame()
+    if selected_option.get() == 'Covid-19':
+        df_to_pass = anl_yearly(covid_df)
+    elif selected_option.get() == 'Influenza':    
+        df_to_pass = anl_yearly(influenza_df)
+    elif selected_option.get() == 'Pneumonia':    
+        df_to_pass = anl_yearly(Pneumonia_df)
+    print(df_to_pass)
+    color_map(year_filter(df_to_pass,year), polygon_dic)
+year_2020 = ttkb.Checkbutton(Date_frame, text='2020', style='flatly', command=lambda: check_func('2020'))
+year_2020.grid(column=0,row=2, sticky="NSEW")
+year_2021 = ttkb.Checkbutton(Date_frame, text='2021', style='flatly', command=lambda: check_func('2021'))
+year_2021.grid(column=0,row=3, sticky="NSEW")
+year_2022 = ttkb.Checkbutton(Date_frame, text='2021', style='flatly', command=lambda: check_func('2022'))
+year_2022.grid(column=0,row=4, sticky="NSEW")
+year_2023 = ttkb.Checkbutton(Date_frame, text='2023', style='flatly', command=lambda: check_func('2021'))
+year_2023.grid(column=0,row=5, sticky="NSEW")
 root.mainloop()
 

@@ -64,13 +64,28 @@ def anl_monthly(df):
     cp_df.loc[:,'Week Ending Date'] = cp_df['Week Ending Date'].apply(lambda x: '/'.join(x.split('/')[::2]))
     #df['Week Ending Date'] = df['Week Ending Date'].apply(lambda x: '/'.join(x.split('/')[::2]))
     mod_df = cp_df.groupby(['Week Ending Date', 'Jurisdiction']).agg({cp_df.columns[3]:'sum', cp_df.columns[4]:'sum'}).reset_index()
-    print(mod_df)
+    #print(mod_df)
     mod_df[['Month', 'Year']] = mod_df['Week Ending Date'].str.split('/', expand=True)
     return mod_df
     
-def anl_yearly():
+def anl_yearly(df):
     """
     input: a dataframe 
     output: manipulated datdrame or siries based on yearly death rate
     """
-    return None
+    cp_df = df.copy()
+    cp_df.loc[:,'Week Ending Date'] = cp_df['Week Ending Date'].apply(lambda x: x.split('/')[2])
+    mod_df = cp_df.groupby(['Week Ending Date', 'Jurisdiction']).agg({cp_df.columns[3]:'sum', cp_df.columns[4]:'sum'}).reset_index()
+    return mod_df
+
+def year_filter(df, year):
+    #used to color the map based on the yearly filter
+    #we must pass in a data frame that is in same format as what anl_yearly reaturns
+    cp_df = df.copy()
+    #print(cp_df)
+    mod_df = cp_df[cp_df['Week Ending Date']==year]
+    #now convert the format to what out color map function accept
+    mod_df = mod_df.drop(columns='Week Ending Date')
+    mod_df['Death Per Capita'] = mod_df.iloc[:,1]/mod_df.iloc[:,2]
+    return mod_df
+    
