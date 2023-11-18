@@ -11,15 +11,17 @@ import banner
 #functions
 def get_key_by_value(dictionary, target_value):
     for key, value in dictionary.items():
-        if value == [target_value] or value == [[target_value]]:
+        if target_value in value or [target_value] in value:
             return key
     return None
 def on_polygon_click(event):
+     
      # Clear the existing content in Data_frame
     for widget in Data_frame.winfo_children():
         widget.destroy()
     # clicked_item is a variable that stores the item ID of polygon
     clicked_item = event.widget.find_closest(event.x, event.y)[0]
+    print(clicked_item)
     stateName = get_key_by_value(polygon_dic, clicked_item)
     #showing data on the bottom of map
     if selected_option.get() == 'Covid-19':
@@ -32,7 +34,7 @@ def on_polygon_click(event):
     df = df.sort_values(['Year','Month'])
     #print(df)
     banner.create_banner(df, Data_frame, stateName)
-    
+
 def color_map(df, polygon_dic):
     #to color code the population, we first define minimum and maximum amount of death per capita
     #since we have 10 color catagories we devide the difference between max and min to 10 
@@ -69,7 +71,7 @@ def color_map(df, polygon_dic):
 #creatint the main windows and frame
 #def change_polygon_color():
 #    canvas.itemconfig(polygon_id, fill="blue")
-root = ttkb.Window(themename="darkly")
+root = ttkb.Window(themename="flatly")
 root.title("HealthMap")
 #root.geometry("900x1000")
 #frame is a place holder for tk widgits
@@ -158,11 +160,11 @@ for feature in data['features']:
                 canvas.itemconfig(st_shape, fill='gainsboro')
                 shapes.append(st_shape)    
                 # Bind the click event to the polygon
+                canvas.tag_bind(st_shape, '<Button-1>', on_polygon_click)
         polygon_dic[str(feature.get('properties').get('name'))] = shapes
-        canvas.tag_bind(st_shape, '<Button-1>', on_polygon_click)
 #filtering pannel
 selected_option = tk.StringVar()
-label1 = ttkb.Label(left_frame, text="Wekcome to HealthMap!").grid(column=0,row=0, sticky="NSEW")
+label1 = ttkb.Label(left_frame, text="Wekcome to HealthMap!",style="Inverse.TLabel").grid(column=0,row=0, sticky="NSEW")
 label2 = ttkb.Label(left_frame, text="Select Data to show:").grid(column=0,row=1, sticky="NSEW")
 covid_filter = ttkb.Radiobutton(left_frame, text='Covid-19', variable=selected_option, value='Covid-19', command=lambda: color_map(anl_deathRate(covid_df), polygon_dic))
 covid_filter.grid(column=0,row=2, sticky="NSEW")

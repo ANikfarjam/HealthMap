@@ -60,10 +60,11 @@ def anl_monthly(df):
     #data frames have these columns
     #'Week Ending Date','Jurisdiction', 'Age Group', 'Pneumonia Deaths', 'Total Deaths'
     #droping the day from date format
-    
-    df.loc[:,'Week Ending Date'] = df['Week Ending Date'].apply(lambda x: '/'.join(x.split('/')[::2]))
+    cp_df = df.copy()
+    cp_df.loc[:,'Week Ending Date'] = cp_df['Week Ending Date'].apply(lambda x: '/'.join(x.split('/')[::2]))
     #df['Week Ending Date'] = df['Week Ending Date'].apply(lambda x: '/'.join(x.split('/')[::2]))
-    mod_df = df.groupby(['Week Ending Date', 'Jurisdiction']).agg({df.columns[3]:'sum', df.columns[4]:'sum'}).reset_index()
+    mod_df = cp_df.groupby(['Week Ending Date', 'Jurisdiction']).agg({cp_df.columns[3]:'sum', cp_df.columns[4]:'sum'}).reset_index()
+    print(mod_df)
     mod_df[['Month', 'Year']] = mod_df['Week Ending Date'].str.split('/', expand=True)
     return mod_df
     

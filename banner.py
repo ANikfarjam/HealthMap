@@ -1,4 +1,6 @@
 import tkinter as tk
+import ttkbootstrap as ttkb
+from ttkwidgets import Table
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -13,11 +15,12 @@ def create_banner(df, frame, stateName):
     # Rotate x-axis labels vertically
     lPlot.set_xticklabels(lPlot.get_xticklabels(), rotation=90, fontsize=7)
     plt.title(stateName)
-    # Create a Text widget to display DataFrame
-    text_widget = tk.Text(frame, height=10, width=40)
-    text_widget.insert(tk.END, df.to_string(index=False))
+    # Create a Table from out dataframe
+    # we can use grid to create a table like data representation
+    text_widget = tk.Text(frame, height=10, width=30)
+    text_widget.insert(tk.END, df.to_string(index=False, justify='right'))
     text_widget.grid(column=1, row=0, sticky="NSEW")
-
+    
     # Create a canvas for the Matplotlib figure
     canvas = FigureCanvasTkAgg(fig, master=frame)
     canvas_widget = canvas.get_tk_widget()
