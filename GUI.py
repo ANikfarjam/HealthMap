@@ -1,3 +1,4 @@
+#Author: ANikfarjam
 import tkinter as tk
 from tkinter import ttk
 import ttkbootstrap as ttkb
@@ -28,8 +29,8 @@ def display_map_data(df):
     for row, (color, value) in enumerate(colors_dic.items()):
         # Create a colored label
         label = ttkb.Label(map_data_panel, text= value * 100, background=color)
-        label.grid(column=0, row=row + 2)
-    #display clors 
+        label.grid(column=0, row=row + 2, sticky="ew", columnspan=2)
+    
 
     
     
