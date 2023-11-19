@@ -44,13 +44,7 @@ def anl_deathRate(df):
     result_df = result_df.drop(columns='NAME')
     result_df['Death Per Capita'] = result_df.iloc[:,1]/result_df.iloc[:,2]
     return result_df
-def anl_weekly(df):
-    """
-    input: a dataframe 
-    output: manipulated datdrame or siries based on weeklydeath rate
-    I dont think analyzing weekly doesnt make sence
-    """
-    return None
+
 def anl_monthly(df):
     """
     input: a dataframe 
@@ -77,7 +71,6 @@ def anl_yearly(df):
     cp_df.loc[:,'Week Ending Date'] = cp_df['Week Ending Date'].apply(lambda x: x.split('/')[2])
     mod_df = cp_df.groupby(['Week Ending Date', 'Jurisdiction']).agg({cp_df.columns[3]:'sum', cp_df.columns[4]:'sum'}).reset_index()
     return mod_df
-
 def year_filter(df, year):
     #used to color the map based on the yearly filter
     #we must pass in a data frame that is in same format as what anl_yearly reaturns

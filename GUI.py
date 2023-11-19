@@ -9,6 +9,31 @@ from DataFrames import covid_df, influenza_df, Pneumonia_df
 from analysisFuntions import anl_deathRate, anl_by_age, anl_monthly, anl_yearly, year_filter
 import banner
 #functions
+colors_dic={}
+
+    
+def display_map_data(df):
+    for widget in map_data_panel.winfo_children():
+        widget.destroy()
+    global colors_dic
+    cp_df = df.copy()
+    #display Virus name
+    column_name = cp_df.columns[1].split()[0]
+    Head = ttkb.Label(map_data_panel, text= column_name, style='info.Inverse.TLabel')
+    Head.grid(column=0, row=0, sticky="NSEW")
+    #display Total death
+    total_death = df.get(df.columns[1]).sum()
+    ds_Label = ttkb.Label(map_data_panel, style='info.Inverse.TLabel', text= str(column_name)+ ' deaths: ' +str(total_death))
+    ds_Label.grid(column=0, row=1, sticky="NSEW")
+    for row, (color, value) in enumerate(colors_dic.items()):
+        # Create a colored label
+        label = ttkb.Label(map_data_panel, text= value * 100, background=color)
+        label.grid(column=0, row=row + 2)
+    #display clors 
+
+    
+    
+
 def get_key_by_value(dictionary, target_value):
     for key, value in dictionary.items():
         if target_value in value or [target_value] in value:
@@ -36,6 +61,11 @@ def on_polygon_click(event):
     banner.create_banner(df, Data_frame, stateName)
 
 def color_map(df, polygon_dic):
+    #check if the color dic is empty
+    #clear the dictionary if its not empty
+    global colors_dic
+    if len(colors_dic) > 0:
+        colors_dic={}
     #to color code the population, we first define minimum and maximum amount of death per capita
     #since we have 10 color catagories we devide the difference between max and min to 10 
     #print(df)
@@ -49,24 +79,35 @@ def color_map(df, polygon_dic):
             jurisdiction_total_death = df.loc[df['Jurisdiction'] == jurisdiction, df.columns[3]].values[0]
             if jurisdiction_total_death >= min_death and jurisdiction_total_death < min_death + step_int:
                 canvas.itemconfig(canvas_id, fill="lime")
+                colors_dic['lime'] = min_death 
             elif jurisdiction_total_death >= (min_death + step_int) and jurisdiction_total_death < (min_death + (2 * step_int)):
                 canvas.itemconfig(canvas_id, fill="green")
+                colors_dic['green'] = min_death + step_int
             elif jurisdiction_total_death >= (min_death + (2 * step_int)) and jurisdiction_total_death < (min_death + (3 * step_int)):
                 canvas.itemconfig(canvas_id, fill="yellow")
+                colors_dic['yellow'] = min_death + (2 * step_int)
             elif jurisdiction_total_death >= (min_death + (3 * step_int)) and jurisdiction_total_death < (min_death + (4 * step_int)):
                 canvas.itemconfig(canvas_id, fill="gold")
+                colors_dic['gold'] = min_death + (3 * step_int)
             elif jurisdiction_total_death >= (min_death + (4 * step_int)) and jurisdiction_total_death < (min_death + (5 * step_int)):
                 canvas.itemconfig(canvas_id, fill="orange")
+                colors_dic['orange'] = min_death + (4 * step_int)
             elif jurisdiction_total_death >= (min_death + (5 * step_int)) and jurisdiction_total_death < (min_death + (6 * step_int)):
                 canvas.itemconfig(canvas_id, fill="darkorange")
+                colors_dic['darkorange'] = min_death + (5 * step_int)
             elif jurisdiction_total_death >= (min_death + (6 * step_int)) and jurisdiction_total_death < (min_death + (7 * step_int)):
                 canvas.itemconfig(canvas_id, fill="sandybrown")
+                colors_dic['sandybrown'] = min_death + (6 * step_int)
             elif jurisdiction_total_death >= (min_death + (7 * step_int)) and jurisdiction_total_death < (min_death + (8 * step_int)):
                 canvas.itemconfig(canvas_id, fill="coral")
+                colors_dic['coral'] = min_death + (7 * step_int)
             elif jurisdiction_total_death >= (min_death + (8 * step_int)) and jurisdiction_total_death < (min_death + (9 * step_int)):
                 canvas.itemconfig(canvas_id, fill="red")
+                colors_dic['red'] = min_death + (8 * step_int)
             else:
                 canvas.itemconfig(canvas_id, fill="darkred")
+                colors_dic['darkred'] = min_death + (9 * step_int)
+    display_map_data(df)
 
 
 #creatint the main windows and frame
@@ -88,6 +129,9 @@ Data_frame.grid(column=1,row=2, sticky=("N", "W", "E", "S"))
 #this frame can sort data to a specific year
 Date_frame = ttkb.Frame(root)
 Date_frame.grid(column=0,row=1, sticky=("N", "W", "E", "S"))
+#crating pannel to display map data
+map_data_panel = ttkb.Frame(root, style='info.TFrame')
+map_data_panel.grid(column=3, row=0, sticky=("N", "W", "E", "S"))
 #since i am creating map from my custom built polygons then i need a dictionatry to keep track of them
 #{"type":"Feature","id":"AL","properties":{"name":"Alabama"},"geometry":{"type":"Polygon",
 #the key values are states name
@@ -197,13 +241,13 @@ def check_func(year):
         df_to_pass = anl_yearly(influenza_df)
     elif selected_option.get() == 'Pneumonia':    
         df_to_pass = anl_yearly(Pneumonia_df)
-    print(df_to_pass)
+    #print(df_to_pass)
     color_map(year_filter(df_to_pass,year), polygon_dic)
 year_2020 = ttkb.Checkbutton(Date_frame, text='2020', style='flatly', command=lambda: check_func('2020'))
 year_2020.grid(column=0,row=2, sticky="NSEW")
 year_2021 = ttkb.Checkbutton(Date_frame, text='2021', style='flatly', command=lambda: check_func('2021'))
 year_2021.grid(column=0,row=3, sticky="NSEW")
-year_2022 = ttkb.Checkbutton(Date_frame, text='2021', style='flatly', command=lambda: check_func('2022'))
+year_2022 = ttkb.Checkbutton(Date_frame, text='2022', style='flatly', command=lambda: check_func('2022'))
 year_2022.grid(column=0,row=4, sticky="NSEW")
 year_2023 = ttkb.Checkbutton(Date_frame, text='2023', style='flatly', command=lambda: check_func('2021'))
 year_2023.grid(column=0,row=5, sticky="NSEW")
