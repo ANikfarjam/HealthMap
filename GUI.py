@@ -125,7 +125,7 @@ right_frame.grid(column=1,row=0, sticky=("N", "W", "E", "S"))
 separator2 = ttkb.Separator(root, orient='horizontal',style='info.Horizontal.TSeparator')
 separator2.grid(column=1,row=1, sticky=("N", "W", "E", "S"))
 #separator.pack()
-Data_frame = ttkb.Frame(root)
+Data_frame = ttkb.LabelFrame(root, text='Monthly Data Analysis', style='primary.TLabelframe')
 Data_frame.grid(column=1,row=2, sticky=("N", "W", "E", "S"))
 #this frame can sort data to a specific year
 Date_frame = ttkb.Frame(root)
