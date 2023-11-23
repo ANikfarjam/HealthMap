@@ -20,7 +20,7 @@ def create_banner(df, frame, stateName):
     # Create a Table from out dataframe
     table_frame  = ttkb.Frame(frame, height=30, width=20, bord=10)
     table_frame.grid(row=0,column=1,sticky="NSEW")
-    create_table(cp_df, table_frame)
+    table = create_table(cp_df, table_frame)
     """
     # we can use grid to create a table like data representation
     text_widget = tk.Text(frame, height=10, width=30)
@@ -37,6 +37,6 @@ def create_banner(df, frame, stateName):
     frame.columnconfigure(1, weight=1)
     frame.rowconfigure(0, weight=1)
 
-    return canvas_widget,#text_widget
+    return canvas_widget, table#text_widget
 
  

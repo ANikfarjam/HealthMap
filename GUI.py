@@ -9,6 +9,7 @@ from operator import mul
 from DataFrames import covid_df, influenza_df, Pneumonia_df
 from analysisFuntions import anl_deathRate, anl_by_age, anl_monthly, anl_yearly, year_filter
 import banner
+import AgeBanner
 #functions
 colors_dic={}
 
@@ -30,11 +31,6 @@ def display_map_data(df):
         # Create a colored label
         label = ttkb.Label(map_data_panel, text= value * 100, background=color)
         label.grid(column=0, row=row + 2, sticky="ew", columnspan=2)
-    
-
-    
-    
-
 def get_key_by_value(dictionary, target_value):
     for key, value in dictionary.items():
         if target_value in value or [target_value] in value:
@@ -60,6 +56,20 @@ def on_polygon_click(event):
     df = df.sort_values(['Year','Month'])
     #print(df)
     banner.create_banner(df, Data_frame, stateName)
+    #age
+    if selected_option.get() == 'Covid-19':
+        age_df = anl_by_age(covid_df)
+    elif selected_option.get() == 'Influenza':    
+        age_df = anl_by_age(influenza_df)
+    elif selected_option.get() == 'Pneumonia':    
+        age_df = anl_by_age(Pneumonia_df)
+    AgeBanner.create_age_banner(age_df, age_frame, stateName)
+    #]make this canvas scrolable
+    scrollbar = ttkb.Scrollbar(analysis_canvas, orient="vertical", command=analysis_canvas.yview)
+    scrollbar.grid(row=0, column=1,rowspan=2, sticky="NS")
+    analysis_canvas.configure(yscrollcommand=scrollbar.set)
+    analysis_canvas.configure(scrollregion=(0,0, canvas_width, 1200))
+
 
 def color_map(df, polygon_dic):
     #check if the color dic is empty
@@ -122,11 +132,22 @@ left_frame = ttkb.Frame(root)
 left_frame.grid(column=0,row=0, sticky=("N", "W", "E", "S"))
 right_frame = ttkb.Frame(root)
 right_frame.grid(column=1,row=0, sticky=("N", "W", "E", "S"))
-separator2 = ttkb.Separator(root, orient='horizontal',style='info.Horizontal.TSeparator')
-separator2.grid(column=1,row=1, sticky=("N", "W", "E", "S"))
+#separator2 = ttkb.Separator(root, orient='horizontal',style='info.Horizontal.TSeparator')
+#separator2.grid(column=1,row=1, sticky=("N", "W", "E", "S"))
 #separator.pack()
-Data_frame = ttkb.LabelFrame(root, text='Monthly Data Analysis', style='primary.TLabelframe')
-Data_frame.grid(column=1,row=2, sticky=("N", "W", "E", "S"))
+#this frame is analyzing data based on age
+#it shows monthly and age analysis
+anl_frame = ttkb.Frame(root)
+anl_frame.grid(column=1,row=1, sticky=("N", "W", "E", "S"))
+analysis_canvas = ttkb.Canvas(anl_frame)
+analysis_canvas.grid(column=0,row=0, sticky=("N", "W", "E", "S"))
+
+#analysis by age
+age_frame = ttkb.LabelFrame(analysis_canvas, text='Death Rate Based on Age', style='primary.TLabelframe')
+age_frame.grid(column=0,row=0, sticky=("N", "W", "E", "S"))
+#monthy analysis
+Data_frame = ttkb.LabelFrame(analysis_canvas, text='Monthly Data Analysis', style='primary.TLabelframe')
+Data_frame.grid(column=0,row=1, sticky=("N", "W", "E", "S"))
 #this frame can sort data to a specific year
 Date_frame = ttkb.Frame(root)
 Date_frame.grid(column=0,row=1, sticky=("N", "W", "E", "S"))
@@ -138,6 +159,9 @@ map_data_panel.grid(column=3, row=0, sticky=("N", "W", "E", "S"))
 #the key values are states name
 # the values are the polygon shapes
 polygon_dic={}
+
+
+
 
 #We have State Boundries json datas that i can create polygons in shape of the states
 #When we do that for all the states we can get map of united states
