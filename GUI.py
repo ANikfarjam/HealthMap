@@ -56,19 +56,8 @@ def on_polygon_click(event):
     df = df.sort_values(['Year','Month'])
     #print(df)
     banner.create_banner(df, Data_frame, stateName)
-    #age
-    if selected_option.get() == 'Covid-19':
-        age_df = anl_by_age(covid_df)
-    elif selected_option.get() == 'Influenza':    
-        age_df = anl_by_age(influenza_df)
-    elif selected_option.get() == 'Pneumonia':    
-        age_df = anl_by_age(Pneumonia_df)
-    AgeBanner.create_age_banner(age_df, age_frame, stateName)
-    #]make this canvas scrolable
-    scrollbar = ttkb.Scrollbar(analysis_canvas, orient="vertical", command=analysis_canvas.yview)
-    scrollbar.grid(row=0, column=1,rowspan=2, sticky="NS")
-    analysis_canvas.configure(yscrollcommand=scrollbar.set)
-    analysis_canvas.configure(scrollregion=(0,0, canvas_width, 1200))
+    
+    
 
 
 def color_map(df, polygon_dic):
@@ -139,15 +128,12 @@ right_frame.grid(column=1,row=0, sticky=("N", "W", "E", "S"))
 #it shows monthly and age analysis
 anl_frame = ttkb.Frame(root)
 anl_frame.grid(column=1,row=1, sticky=("N", "W", "E", "S"))
-analysis_canvas = ttkb.Canvas(anl_frame)
-analysis_canvas.grid(column=0,row=0, sticky=("N", "W", "E", "S"))
-
 #analysis by age
-age_frame = ttkb.LabelFrame(analysis_canvas, text='Death Rate Based on Age', style='primary.TLabelframe')
-age_frame.grid(column=0,row=0, sticky=("N", "W", "E", "S"))
+#age_frame = ttkb.LabelFrame(anl_frame, text='Death Rate Based on Age', style='primary.TLabelframe')
+#age_frame.grid(column=0,row=0, sticky=("N", "W", "E", "S"))
 #monthy analysis
-Data_frame = ttkb.LabelFrame(analysis_canvas, text='Monthly Data Analysis', style='primary.TLabelframe')
-Data_frame.grid(column=0,row=1, sticky=("N", "W", "E", "S"))
+Data_frame = ttkb.LabelFrame(anl_frame, text='Monthly Data Analysis', style='primary.TLabelframe')
+Data_frame.grid(column=1,row=0, sticky=("N", "W", "E", "S"))
 #this frame can sort data to a specific year
 Date_frame = ttkb.Frame(root)
 Date_frame.grid(column=0,row=1, sticky=("N", "W", "E", "S"))
@@ -276,5 +262,22 @@ year_2022 = ttkb.Checkbutton(Date_frame, text='2022', style='flatly', command=la
 year_2022.grid(column=0,row=4, sticky="NSEW")
 year_2023 = ttkb.Checkbutton(Date_frame, text='2023', style='flatly', command=lambda: check_func('2021'))
 year_2023.grid(column=0,row=5, sticky="NSEW")
-root.mainloop()
+# to do analysis based on age 
+# I create a buton that opens up a new windows and show related data
+def open_frame(disease):
+     # Create a new top-level window (frame)
+    new_window = ttkb.Toplevel(root)
+    new_window.title(str(disease) + " analysis by age")
+    if disease == 'Covid-19':
+        AgeBanner.create_age_banner(anl_by_age(covid_df), new_window)
+    elif disease == 'Influenza':
+        AgeBanner.create_age_banner(anl_by_age(influenza_df), new_window)
+    elif disease == 'Pneumonia':
+        AgeBanner.create_age_banner(anl_by_age(Pneumonia_df), new_window)
+    
+        
+open_button = ttkb.Button(Date_frame, text="Age Analysis", command=lambda: open_frame(selected_option.get()), style='primary.Outline.TButton')
+open_button.grid(column=0,row=6, sticky="NSEW")
 
+
+root.mainloop()

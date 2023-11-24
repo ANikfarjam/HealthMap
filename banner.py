@@ -15,11 +15,11 @@ def create_banner(df, frame, stateName):
     fig, ax = plt.subplots()
     lPlot = sns.lineplot(cp_df, x='Months', y=cp_df.columns[1], ax=ax)
     # Rotate x-axis labels vertically
-    lPlot.set_xticklabels(lPlot.get_xticklabels(), rotation=90, fontsize=7)
+    lPlot.set_xticklabels(lPlot.get_xticklabels(), rotation=90, fontsize=3)
     plt.title(stateName)
     # Create a Table from out dataframe
     table_frame  = ttkb.Frame(frame, height=30, width=20, bord=10)
-    table_frame.grid(row=0,column=1,sticky="NSEW")
+    table_frame.grid(row=0, column=1,sticky="NSEW")
     table = create_table(cp_df, table_frame)
     """
     # we can use grid to create a table like data representation
