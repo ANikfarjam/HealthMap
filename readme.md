@@ -26,3 +26,5 @@ at the end of the day im going to use corntab to schedule updating our data.csv-
 ~ corntab -e <frequency> curl -o data.csv https://path/to/file.csv
 
 
+Errors
+  

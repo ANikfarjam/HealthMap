@@ -18,6 +18,8 @@ def display_map_data(df):
     for widget in map_data_panel.winfo_children():
         widget.destroy()
     global colors_dic
+    sorted_dict = dict(sorted(colors_dic.items(), key=lambda item: item[1]))
+    #print(sorted_dict)
     cp_df = df.copy()
     #display Virus name
     column_name = cp_df.columns[1].split()[0]
@@ -27,10 +29,28 @@ def display_map_data(df):
     total_death = df.get(df.columns[1]).sum()
     ds_Label = ttkb.Label(map_data_panel, style='info.Inverse.TLabel', text= str(column_name)+ ' deaths: ' +str(total_death))
     ds_Label.grid(column=0, row=1, sticky="NSEW")
-    for row, (color, value) in enumerate(colors_dic.items()):
+    #line_tacker = 0
+    if var_2020.get() == 1:
+        yr_label = ttkb.Label(map_data_panel, text="Now showing data for the year 2020.")
+        yr_label.grid(column=0, row=2, sticky="NSEW")
+    elif var_2021.get() == 1:
+        yr_label = ttkb.Label(map_data_panel, text="Now showing data for the year 2021.")
+        yr_label.grid(column=0, row=2, sticky="NSEW")
+    elif var_2022.get() == 1:
+        yr_label = ttkb.Label(map_data_panel, text="Now showing data for the year 2022.")
+        yr_label.grid(column=0, row=2, sticky="NSEW")
+    elif var_2023.get() == 1:
+        yr_label = ttkb.Label(map_data_panel, text="Now showing data for the year 2023.")
+        yr_label.grid(column=0, row=2, sticky="NSEW")
+    else:
+        yr_label = ttkb.Label(map_data_panel, text="This data is from 2020-2023")
+        yr_label.grid(column=0, row=2, sticky="NSEW")
+    for row, (color, value) in enumerate(sorted_dict.items()):
         # Create a colored label
-        label = ttkb.Label(map_data_panel, text= value * 100, background=color)
-        label.grid(column=0, row=row + 2, sticky="ew", columnspan=2)
+        label = ttkb.Label(map_data_panel, text= "{:.3f} to {:.3f}".format(value[0] * 100, value[1] * 100), background=color)
+        label.grid(column=0, row=row + 3, sticky="ew", columnspan=2)
+        #line_tacker = row + 2
+    
 def get_key_by_value(dictionary, target_value):
     for key, value in dictionary.items():
         if target_value in value or [target_value] in value:
@@ -79,34 +99,34 @@ def color_map(df, polygon_dic):
             jurisdiction_total_death = df.loc[df['Jurisdiction'] == jurisdiction, df.columns[3]].values[0]
             if jurisdiction_total_death >= min_death and jurisdiction_total_death < min_death + step_int:
                 canvas.itemconfig(canvas_id, fill="lime")
-                colors_dic['lime'] = min_death 
+                colors_dic['lime'] = [0,min_death] 
             elif jurisdiction_total_death >= (min_death + step_int) and jurisdiction_total_death < (min_death + (2 * step_int)):
                 canvas.itemconfig(canvas_id, fill="green")
-                colors_dic['green'] = min_death + step_int
+                colors_dic['green'] = [min_death, min_death + step_int]
             elif jurisdiction_total_death >= (min_death + (2 * step_int)) and jurisdiction_total_death < (min_death + (3 * step_int)):
                 canvas.itemconfig(canvas_id, fill="yellow")
-                colors_dic['yellow'] = min_death + (2 * step_int)
+                colors_dic['yellow'] = [min_death + step_int, min_death + (2 * step_int)]
             elif jurisdiction_total_death >= (min_death + (3 * step_int)) and jurisdiction_total_death < (min_death + (4 * step_int)):
                 canvas.itemconfig(canvas_id, fill="gold")
-                colors_dic['gold'] = min_death + (3 * step_int)
+                colors_dic['gold'] = [min_death + (2 * step_int), min_death + (3 * step_int)]
             elif jurisdiction_total_death >= (min_death + (4 * step_int)) and jurisdiction_total_death < (min_death + (5 * step_int)):
                 canvas.itemconfig(canvas_id, fill="orange")
-                colors_dic['orange'] = min_death + (4 * step_int)
+                colors_dic['orange'] = [min_death + (3 * step_int), min_death + (4 * step_int)]
             elif jurisdiction_total_death >= (min_death + (5 * step_int)) and jurisdiction_total_death < (min_death + (6 * step_int)):
                 canvas.itemconfig(canvas_id, fill="darkorange")
-                colors_dic['darkorange'] = min_death + (5 * step_int)
+                colors_dic['darkorange'] = [min_death + (4 * step_int), min_death + (5 * step_int)]
             elif jurisdiction_total_death >= (min_death + (6 * step_int)) and jurisdiction_total_death < (min_death + (7 * step_int)):
                 canvas.itemconfig(canvas_id, fill="sandybrown")
-                colors_dic['sandybrown'] = min_death + (6 * step_int)
+                colors_dic['sandybrown'] = [min_death + (5 * step_int), min_death + (6 * step_int)]
             elif jurisdiction_total_death >= (min_death + (7 * step_int)) and jurisdiction_total_death < (min_death + (8 * step_int)):
                 canvas.itemconfig(canvas_id, fill="coral")
-                colors_dic['coral'] = min_death + (7 * step_int)
+                colors_dic['coral'] = [min_death + (6 * step_int), min_death + (7 * step_int)]
             elif jurisdiction_total_death >= (min_death + (8 * step_int)) and jurisdiction_total_death < (min_death + (9 * step_int)):
                 canvas.itemconfig(canvas_id, fill="red")
-                colors_dic['red'] = min_death + (8 * step_int)
+                colors_dic['red'] = [min_death + (7 * step_int), min_death + (8 * step_int)]
             else:
                 canvas.itemconfig(canvas_id, fill="darkred")
-                colors_dic['darkred'] = min_death + (9 * step_int)
+                colors_dic['darkred'] = [min_death + (8 * step_int), min_death + (9 * step_int)]
     display_map_data(df)
 
 
@@ -254,13 +274,21 @@ def check_func(year):
         df_to_pass = anl_yearly(Pneumonia_df)
     #print(df_to_pass)
     color_map(year_filter(df_to_pass,year), polygon_dic)
-year_2020 = ttkb.Checkbutton(Date_frame, text='2020', style='flatly', command=lambda: check_func('2020'))
+#this function check witch checkbutton is clicked
+#The control variable that tracks the current state of the checkbutton. 
+#Normally this variable is an IntVar, and 0 means cleared and 1 means set
+var_2020 = tk.IntVar()
+var_2021 = tk.IntVar()
+var_2022 = tk.IntVar()
+var_2023 = tk.IntVar()
+
+year_2020 = ttkb.Checkbutton(Date_frame, text='2020', style='flatly', variable= var_2020, command=lambda: check_func('2020'))
 year_2020.grid(column=0,row=2, sticky="NSEW")
-year_2021 = ttkb.Checkbutton(Date_frame, text='2021', style='flatly', command=lambda: check_func('2021'))
+year_2021 = ttkb.Checkbutton(Date_frame, text='2021', style='flatly', variable= var_2021, command=lambda: check_func('2021'))
 year_2021.grid(column=0,row=3, sticky="NSEW")
-year_2022 = ttkb.Checkbutton(Date_frame, text='2022', style='flatly', command=lambda: check_func('2022'))
+year_2022 = ttkb.Checkbutton(Date_frame, text='2022', style='flatly', variable= var_2022, command=lambda: check_func('2022'))
 year_2022.grid(column=0,row=4, sticky="NSEW")
-year_2023 = ttkb.Checkbutton(Date_frame, text='2023', style='flatly', command=lambda: check_func('2021'))
+year_2023 = ttkb.Checkbutton(Date_frame, text='2023', style='flatly', variable= var_2023, command=lambda: check_func('2023'))
 year_2023.grid(column=0,row=5, sticky="NSEW")
 # to do analysis based on age 
 # I create a buton that opens up a new windows and show related data

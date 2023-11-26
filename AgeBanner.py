@@ -25,7 +25,7 @@ def create_age_banner(df, frame):
     #ax.set_xticks(range(len(cp_df.columns)))
     #plt.figure(figsize=(10, 6))
     hmap = sns.heatmap(fig_df, linewidths=0.5, ax=ax, xticklabels=True, cmap='Blues')
-    plt.title('Population Age Distribution')
+    plt.title('Age and Death rate Distribution')
     plt.tick_params(axis='x', labelsize=8)
     # Create a canvas for the Matplotlib figure
     canvas = FigureCanvasTkAgg(fig, master=frame)
