@@ -1,3 +1,4 @@
+#Author= Ashkan Nikfarjam
 from DataFrames import covid_df, influenza_df, Pneumonia_df
 import pandas as pd
 import re

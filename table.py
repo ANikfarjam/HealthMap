@@ -1,3 +1,4 @@
+#Author= Ashkan Nikfarjam
 import pandas as pd
 from DataFrames import covid_df
 import ttkbootstrap as ttkb

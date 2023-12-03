@@ -1,3 +1,4 @@
+#Author= Ashkan Nikfarjam
 import tkinter as tk
 import ttkbootstrap as ttkb
 from ttkwidgets import Table

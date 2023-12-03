@@ -1,16 +1,43 @@
-droping these colums
+Thank you and welcoome to health map!
 
-Date As Of, Start Week, MMWRyear MMWRweek, Week Ending Date, Group, Indicator, Foornote
-we have DataFrames.py that we cleaned up data and created 3 other data frames based on each individual deseases
+How to run the program:
 
-analysisFunctions.py implements functions that manipulate data frames for ploting and for map
+1st Way:
 
-GUI.py creates our tkinter gui window
+ 1- open a terminal
 
-    created states shape polygon
+ 2- cd to the directory that the files are stored
 
-    created radio buttons that can change the color of map based on the data of selected desease
+ 3- execute run.sh
 
+        $ sh run.sh (do not include $)
+        if this doesnt run fir execute this command then do sh run.sh
+            chmod u+x run.sh
+2nd way:
+
+    Befor running GUI.py run DataFrames.py first!
+    python3 DataFrames.py
+    pthon3 GUI.py
+How to navigate:
+
+1- on the left panels user can choose witch particular disease they would like to display on map 
+
+2- as well as chooosing the year
+
+    Note: After choosing a specific year, if you wish to revert back to total death, simply unckeck the check 
+    button, and click on that disease (or any other disease) radio button. 
+
+3- map polygons are clickble and user can display monthly analysis for the state of intrest at just by clicking on the state polygon
+
+4- after choosing specific disease user is able to display Age death rate by state analysis by clicking on Age Analysis button in left panel
+
+    this will display heat map and table in a new window
+
+5- a map legend bar on the right side of map displays the total death color scale as well as time period the data are being displayes 
+
+
+
+Screen shot of some data frames:
 ![Alt Text](./SC/sample1.png)
 ![Alt Text](./SC/sample2.png)
 ![Alt Text](./SC/sample3.png)
